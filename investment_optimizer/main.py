@@ -38,13 +38,20 @@ from Utils.metrics import (
 )
 
 
-def run_all_algorithms(modal):
+def run_all_algorithms(
+    modal,
+    risk_limit
+):
 
     print("\n")
     print("=" * 100)
 
     print(
         f"OPTIMASI INVESTASI - MODAL Rp {modal:,.0f}"
+    )
+
+    print(
+        f"Risk Limit : {risk_limit}"
     )
 
     print("=" * 100)
@@ -54,15 +61,18 @@ def run_all_algorithms(modal):
     # =====================
 
     bb_result = branch_and_bound(
-        modal
+        modal,
+        risk_limit
     )
 
     dp_result = dynamic_programming(
-        modal
+        modal,
+        risk_limit
     )
 
     ga_result = genetic_algorithm(
-        modal
+        modal,
+        risk_limit
     )
 
     results = [
@@ -96,16 +106,18 @@ def run_all_algorithms(modal):
 
 if __name__ == "__main__":
 
-    scenarios = [
-        10_000_000,
-        100_000_000,
-        1_000_000_000
+    MODAL = 100_000_000
+
+    risk_scenarios = [
+        3.5,
+        4.0,
+        4.5
     ]
 
     all_results = []
 
-    for i, modal in enumerate(
-        scenarios,
+    for i, risk_limit in enumerate(
+        risk_scenarios,
         start=1
     ):
 
@@ -117,17 +129,22 @@ if __name__ == "__main__":
         )
 
         print(
-            f"MODAL = Rp {modal:,.0f}"
+            f"MODAL = Rp {MODAL:,.0f}"
+        )
+
+        print(
+            f"RISK LIMIT = {risk_limit}"
         )
 
         print("#" * 100)
 
         results = run_all_algorithms(
-            modal
+            MODAL,
+            risk_limit
         )
 
         all_results.append({
             "scenario": i,
-            "modal": modal,
+            "risk_limit": risk_limit,
             "results": results
         })
