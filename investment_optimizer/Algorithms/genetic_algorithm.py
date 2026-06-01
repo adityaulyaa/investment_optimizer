@@ -40,7 +40,9 @@ MUTATION_RATE = 0.1
 # MEMBUAT INDIVIDU VALID
 # =====================================
 
-def generate_individual():
+def generate_individual(
+    risk_limit=4.0
+):
 
     while True:
 
@@ -57,7 +59,8 @@ def generate_individual():
         if is_valid_allocation(
             tabungan,
             emas,
-            reksa
+            reksa,
+            risk_limit
         ):
             return (
                 tabungan,
@@ -70,14 +73,19 @@ def generate_individual():
 # FITNESS
 # =====================================
 
-def fitness(individual, modal):
+def fitness(
+    individual,
+    modal,
+    risk_limit=4.0
+):
 
     t, e, r = individual
 
     if not is_valid_allocation(
         t,
         e,
-        r
+        r,
+        risk_limit
     ):
         return 0
 
@@ -96,6 +104,7 @@ def fitness(individual, modal):
 def tournament_selection(
     population,
     modal,
+    risk_limit=4.0,
     k=3
 ):
 
@@ -107,7 +116,11 @@ def tournament_selection(
     return max(
         candidates,
         key=lambda ind:
-        fitness(ind, modal)
+        fitness(
+            ind,
+            modal,
+            risk_limit
+        )
     )
 
 
@@ -115,7 +128,11 @@ def tournament_selection(
 # CROSSOVER
 # =====================================
 
-def crossover(parent1, parent2):
+def crossover(
+    parent1,
+    parent2,
+    risk_limit=4.0
+):
 
     if random.random() > CROSSOVER_RATE:
         return parent1
@@ -131,7 +148,8 @@ def crossover(parent1, parent2):
     if is_valid_allocation(
         child_t,
         child_e,
-        child_r
+        child_r,
+        risk_limit
     ):
         return (
             child_t,
@@ -146,24 +164,34 @@ def crossover(parent1, parent2):
 # MUTASI
 # =====================================
 
-def mutate(individual):
+def mutate(
+    individual,
+    risk_limit=4.0
+):
 
     if random.random() > MUTATION_RATE:
         return individual
 
-    return generate_individual()
+    return generate_individual(
+        risk_limit
+    )
 
 
 # =====================================
 # MAIN GA
 # =====================================
 
-def genetic_algorithm(modal):
+def genetic_algorithm(
+    modal,
+    risk_limit=4.0
+):
 
     start_time = perf_counter()
 
     population = [
-        generate_individual()
+        generate_individual(
+            risk_limit
+        )
         for _ in range(
             POPULATION_SIZE
         )
@@ -185,21 +213,25 @@ def genetic_algorithm(modal):
 
             parent1 = tournament_selection(
                 population,
-                modal
+                modal,
+                risk_limit
             )
 
             parent2 = tournament_selection(
                 population,
-                modal
+                modal,
+                risk_limit
             )
 
             child = crossover(
                 parent1,
-                parent2
+                parent2,
+                risk_limit
             )
 
             child = mutate(
-                child
+                child,
+                risk_limit
             )
 
             new_population.append(
@@ -217,13 +249,15 @@ def genetic_algorithm(modal):
             key=lambda ind:
             fitness(
                 ind,
-                modal
+                modal,
+                risk_limit
             )
         )
 
         generation_fitness = fitness(
             generation_best,
-            modal
+            modal,
+            risk_limit
         )
 
         if generation_fitness > best_fitness:
@@ -282,6 +316,9 @@ def genetic_algorithm(modal):
     return {
         "algorithm":
             "Genetic Algorithm",
+
+        "risk_limit":
+            risk_limit,
 
         "tabungan":
             solution["tabungan"],
