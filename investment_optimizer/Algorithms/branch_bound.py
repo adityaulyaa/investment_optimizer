@@ -1,4 +1,15 @@
+import sys
+import os
 from time import perf_counter
+
+project_root = os.path.dirname(
+    os.path.dirname(
+        os.path.abspath(__file__)
+    )
+)
+
+if project_root not in sys.path:
+    sys.path.append(project_root)
 
 from Models.investment_model import (
     ALLOCATION_STEP,
