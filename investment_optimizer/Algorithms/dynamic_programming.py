@@ -63,6 +63,7 @@ def dynamic_programming(modal):
 
     best_solution = None
     best_wealth = float("-inf")
+    all_valid_solutions = []
 
     for tabungan in range(
         10,
@@ -84,21 +85,45 @@ def dynamic_programming(modal):
             if result is None:
                 continue
 
+            all_valid_solutions.append(
+                result
+            )
+
             if result["wealth"] > best_wealth:
                 best_wealth = result["wealth"]
                 best_solution = result
 
     runtime = perf_counter() - start_time
 
+    all_valid_solutions.sort(
+        key=lambda x: x["wealth"],
+        reverse=True
+    )
+
+    top_3 = all_valid_solutions[:3]
+
     return {
         "algorithm": "Dynamic Programming",
+
         "tabungan": best_solution["tabungan"],
         "emas": best_solution["emas"],
         "reksa": best_solution["reksa"],
+
         "wealth": best_solution["wealth"],
         "risk": best_solution["risk"],
+
         "runtime": runtime,
-        "states_visited": states_visited
+
+        "total_generated": states_visited,
+        "invalid_count": (
+            states_visited
+            - len(all_valid_solutions)
+        ),
+        "valid_count": len(
+            all_valid_solutions
+        ),
+
+        "top_3": top_3
     }
 
 
@@ -108,32 +133,51 @@ if __name__ == "__main__":
         100_000_000
     )
 
-    print("\n=== DYNAMIC PROGRAMMING ===")
-
     print(
-        f"Tabungan : {result['tabungan']}%"
+        "\n=== DYNAMIC PROGRAMMING ==="
     )
 
     print(
-        f"Emas     : {result['emas']}%"
+        f"Total Kombinasi Dibangkitkan : {result['total_generated']}"
     )
 
     print(
-        f"Reksa    : {result['reksa']}%"
+        f"Kombinasi Tidak Valid        : {result['invalid_count']}"
     )
 
     print(
-        f"Wealth   : Rp {result['wealth']:,.2f}"
+        f"Kombinasi Valid              : {result['valid_count']}"
     )
 
-    print(
-        f"Risk     : {result['risk']:.2f}"
-    )
+    print("\nTOP 3 SOLUSI")
+
+    for i, sol in enumerate(
+        result["top_3"],
+        start=1
+    ):
+
+        print(f"\n#{i}")
+
+        print(
+            f"Tabungan : {sol['tabungan']}%"
+        )
+
+        print(
+            f"Emas     : {sol['emas']}%"
+        )
+
+        print(
+            f"Reksa    : {sol['reksa']}%"
+        )
+
+        print(
+            f"Risk     : {sol['risk']:.2f}"
+        )
+
+        print(
+            f"Wealth   : Rp {sol['wealth']:,.2f}"
+        )
 
     print(
-        f"Runtime  : {result['runtime']:.6f} detik"
-    )
-
-    print(
-        f"States   : {result['states_visited']}"
+        f"\nRuntime  : {result['runtime']:.6f} detik"
     )
