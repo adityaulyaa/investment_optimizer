@@ -27,7 +27,10 @@ from Models.investment_model import (
 )
 
 
-def dynamic_programming(modal):
+def dynamic_programming(
+    modal,
+    risk_limit=4.0
+):
 
     start_time = perf_counter()
 
@@ -48,7 +51,8 @@ def dynamic_programming(modal):
         if not is_valid_allocation(
             tabungan,
             emas,
-            reksa
+            reksa,
+            risk_limit
         ):
             return None
 
@@ -104,6 +108,8 @@ def dynamic_programming(modal):
 
     return {
         "algorithm": "Dynamic Programming",
+
+        "risk_limit": risk_limit,
 
         "tabungan": best_solution["tabungan"],
         "emas": best_solution["emas"],

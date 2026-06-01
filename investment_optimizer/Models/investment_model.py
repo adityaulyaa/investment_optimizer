@@ -30,10 +30,6 @@ MIN_TABUNGAN = 10
 MAX_REKSA = 50
 ALLOCATION_STEP = 5
 
-# Batas risiko portofolio
-RISK_LIMIT = 4.0
-
-
 # =========================
 # PERHITUNGAN WEALTH
 # =========================
@@ -100,7 +96,12 @@ def calculate_risk(tabungan_pct, emas_pct, reksa_pct):
 # VALIDASI CONSTRAINT
 # =========================
 
-def is_valid_allocation(tabungan_pct, emas_pct, reksa_pct):
+def is_valid_allocation(
+    tabungan_pct,
+    emas_pct,
+    reksa_pct,
+    risk_limit=4.0
+):
     """
     Memeriksa apakah kombinasi alokasi valid.
     """
@@ -118,7 +119,11 @@ def is_valid_allocation(tabungan_pct, emas_pct, reksa_pct):
         return False
 
     # Kelipatan 5%
-    allocations = [tabungan_pct, emas_pct, reksa_pct]
+    allocations = [
+        tabungan_pct,
+        emas_pct,
+        reksa_pct
+    ]
 
     for value in allocations:
         if value % ALLOCATION_STEP != 0:
@@ -131,7 +136,7 @@ def is_valid_allocation(tabungan_pct, emas_pct, reksa_pct):
         reksa_pct
     )
 
-    if risk > RISK_LIMIT:
+    if risk > risk_limit:
         return False
 
     return True

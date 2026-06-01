@@ -18,7 +18,10 @@ from Models.investment_model import (
 )
 
 
-def branch_and_bound(modal):
+def branch_and_bound(
+    modal,
+    risk_limit=4.0
+):
     """
     Branch and Bound untuk mencari
     kombinasi investasi terbaik.
@@ -55,7 +58,8 @@ def branch_and_bound(modal):
             if not is_valid_allocation(
                 tabungan,
                 emas,
-                reksa
+                reksa,
+                risk_limit
             ):
                 pruned_nodes += 1
                 continue
@@ -87,6 +91,8 @@ def branch_and_bound(modal):
 
     result = {
         "algorithm": "Branch and Bound",
+
+        "risk_limit": risk_limit,
 
         "tabungan": best_solution["tabungan"],
         "emas": best_solution["emas"],
