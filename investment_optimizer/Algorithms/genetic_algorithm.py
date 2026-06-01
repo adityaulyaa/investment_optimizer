@@ -171,6 +171,7 @@ def genetic_algorithm(modal):
 
     best_individual = None
     best_fitness = 0
+    all_individuals = []
 
     for _ in range(
         GENERATIONS
@@ -207,6 +208,10 @@ def genetic_algorithm(modal):
 
         population = new_population
 
+        all_individuals.extend(
+            population
+        )
+
         generation_best = max(
             population,
             key=lambda ind:
@@ -231,6 +236,39 @@ def genetic_algorithm(modal):
         perf_counter()
         - start_time
     )
+
+    unique_solutions = []
+
+    seen = set()
+
+    for individual in all_individuals:
+
+        t, e, r = individual
+
+        key = (t, e, r)
+
+        if key in seen:
+            continue
+
+        seen.add(key)
+
+        solution = create_solution(
+            t,
+            e,
+            r,
+            modal
+        )
+
+        unique_solutions.append(
+            solution
+        )
+
+    unique_solutions.sort(
+        key=lambda x: x["wealth"],
+        reverse=True
+    )
+
+    top_3 = unique_solutions[:3]
 
     t, e, r = best_individual
 
@@ -263,8 +301,20 @@ def genetic_algorithm(modal):
         "runtime":
             runtime,
 
+        "population_size":
+            POPULATION_SIZE,
+
         "generations":
-            GENERATIONS
+            GENERATIONS,
+
+        "individuals_evaluated":
+            len(all_individuals),
+
+        "valid_count":
+            len(unique_solutions),
+
+        "top_3":
+            top_3
     }
 
 
@@ -279,29 +329,50 @@ if __name__ == "__main__":
     )
 
     print(
-        f"Tabungan : {result['tabungan']}%"
+        f"Population Size           : {result['population_size']}"
     )
 
     print(
-        f"Emas     : {result['emas']}%"
+        f"Generations               : {result['generations']}"
     )
 
     print(
-        f"Reksa    : {result['reksa']}%"
+        f"Individuals Evaluated     : {result['individuals_evaluated']}"
     )
 
     print(
-        f"Wealth   : Rp {result['wealth']:,.2f}"
+        f"Solusi Valid              : {result['valid_count']}"
     )
 
-    print(
-        f"Risk     : {result['risk']:.2f}"
-    )
+    print("\nTOP 3 SOLUSI")
+
+    for i, sol in enumerate(
+        result["top_3"],
+        start=1
+    ):
+
+        print(f"\n#{i}")
+
+        print(
+            f"Tabungan : {sol['tabungan']}%"
+        )
+
+        print(
+            f"Emas     : {sol['emas']}%"
+        )
+
+        print(
+            f"Reksa    : {sol['reksa']}%"
+        )
+
+        print(
+            f"Risk     : {sol['risk']:.2f}"
+        )
+
+        print(
+            f"Wealth   : Rp {sol['wealth']:,.2f}"
+        )
 
     print(
-        f"Runtime  : {result['runtime']:.6f} detik"
-    )
-
-    print(
-        f"Generasi : {result['generations']}"
+        f"\nRuntime  : {result['runtime']:.6f} detik"
     )
