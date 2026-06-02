@@ -1,5 +1,28 @@
 import tkinter as tk
 from tkinter import ttk
+import sys
+import os
+
+project_root = os.path.dirname(
+    os.path.dirname(
+        os.path.abspath(__file__)
+    )
+)
+
+if project_root not in sys.path:
+    sys.path.append(project_root)
+
+from Algorithms.branch_bound import (
+    branch_and_bound
+)
+
+from Algorithms.dynamic_programming import (
+    dynamic_programming
+)
+
+from Algorithms.genetic_algorithm import (
+    genetic_algorithm
+)
 
 
 class InvestmentOptimizerGUI:
@@ -72,6 +95,15 @@ class InvestmentOptimizerGUI:
 
         self.configure_styles()
         self.create_widgets()
+        self.create_algorithm_cards(
+            self.tab1
+        )
+        self.create_algorithm_cards(
+            self.tab2
+        )
+        self.create_algorithm_cards(
+            self.tab3
+        )
 
     # =================================
     # UI COMPONENTS
@@ -206,7 +238,8 @@ class InvestmentOptimizerGUI:
             font=("Segoe UI", 10, "bold"),
             relief="flat",
             padx=20,
-            pady=8
+            pady=8,
+            command=self.run_optimization
         )
 
         self.run_button.pack(
@@ -263,8 +296,9 @@ class InvestmentOptimizerGUI:
         # TAB 1
         # =============================
 
-        self.tab1 = ttk.Frame(
-            self.notebook
+        self.tab1 = tk.Frame(
+            self.notebook,
+            bg="#0f172a"
         )
 
         self.notebook.add(
@@ -276,8 +310,9 @@ class InvestmentOptimizerGUI:
         # TAB 2
         # =============================
 
-        self.tab2 = ttk.Frame(
-            self.notebook
+        self.tab2 = tk.Frame(
+            self.notebook,
+            bg="#0f172a"
         )
 
         self.notebook.add(
@@ -289,8 +324,9 @@ class InvestmentOptimizerGUI:
         # TAB 3
         # =============================
 
-        self.tab3 = ttk.Frame(
-            self.notebook
+        self.tab3 = tk.Frame(
+            self.notebook,
+            bg="#0f172a"
         )
 
         self.notebook.add(
@@ -298,6 +334,384 @@ class InvestmentOptimizerGUI:
             text="Scenario 3"
         )
 
+    def update_algorithm_card(
+        self,
+        parent,
+        algorithm_name,
+        result
+    ):
+
+        widgets = self.algorithm_widgets[
+            parent
+        ][algorithm_name]
+
+        widgets["total"].config(
+            text=f"Total Kombinasi : {result.get('total_generated', '-')}"
+        )
+
+        widgets["valid"].config(
+            text=f"Valid : {result.get('valid_count', '-')}"
+        )
+
+        invalid_count = (
+            result.get(
+                "pruned_count",
+                result.get(
+                    "invalid_count",
+                    "-"
+                )
+            )
+        )
+
+        widgets["invalid"].config(
+            text=f"Invalid / Pruned : {invalid_count}"
+        )
+
+        top3 = result.get(
+            "top_3",
+            []
+        )
+
+        for i in range(3):
+
+            label = widgets[f"top{i+1}"]
+
+            if i < len(top3):
+
+                sol = top3[i]
+
+                label.config(
+                    text=(
+                        f"#{i+1} "
+                        f"T:{sol['tabungan']}% "
+                        f"E:{sol['emas']}% "
+                        f"R:{sol['reksa']}%"
+                    )
+                )
+
+            else:
+
+                label.config(
+                    text=f"#{i+1} -"
+                )
+
+        widgets["best"].config(
+            text=(
+                f"T:{result['tabungan']}% | "
+                f"E:{result['emas']}% | "
+                f"R:{result['reksa']}%\n"
+                f"Wealth: Rp {result['wealth']:,.0f}"
+            )
+        )
+
+        widgets["runtime"].config(
+            text=(
+                f"Runtime : "
+                f"{result['runtime']:.6f} detik"
+            )
+        )
+
+    def create_algorithm_cards(
+    self,
+    parent
+):
+
+        container = tk.Frame(
+            parent,
+            bg="#0f172a"
+        )
+
+        container.pack(
+            fill="both",
+            expand=True,
+            padx=15,
+            pady=15
+        )
+
+        # 3 kolom sama besar
+        container.grid_columnconfigure(
+            0,
+            weight=1
+        )
+
+        container.grid_columnconfigure(
+            1,
+            weight=1
+        )
+
+        container.grid_columnconfigure(
+            2,
+            weight=1
+        )
+
+        container.grid_rowconfigure(
+            0,
+            weight=1
+        )
+
+        cards = [
+            "Branch and Bound",
+            "Dynamic Programming",
+            "Genetic Algorithm"
+        ]
+
+        for index, title in enumerate(cards):
+
+            card = ttk.LabelFrame(
+                container,
+                text=title,
+                style="Card.TLabelframe"
+            )
+
+            card.grid(
+                row=0,
+                column=index,
+                sticky="nsew",
+                padx=8,
+                pady=5
+            )
+
+            content = tk.Frame(
+                card,
+                bg="#111827"
+            )
+
+            content.pack(
+                fill="both",
+                expand=True,
+                padx=10,
+                pady=10
+            )
+
+            stats_title = tk.Label(
+                content,
+                text="STATISTICS",
+                bg="#111827",
+                fg="#22c55e",
+                font=("Segoe UI", 10, "bold")
+            )
+
+            stats_title.pack(
+                anchor="w"
+            )
+
+            total_label = tk.Label(
+                content,
+                text="Total Kombinasi : -",
+                bg="#111827",
+                fg="white"
+            )
+
+            total_label.pack(
+                anchor="w"
+            )
+
+            valid_label = tk.Label(
+                content,
+                text="Valid : -",
+                bg="#111827",
+                fg="white"
+            )
+
+            valid_label.pack(
+                anchor="w"
+            )
+
+            invalid_label = tk.Label(
+                content,
+                text="Invalid / Pruned : -",
+                bg="#111827",
+                fg="white"
+            )
+
+            invalid_label.pack(
+                anchor="w"
+            )
+
+            ttk.Separator(
+                content,
+                orient="horizontal"
+            ).pack(
+                fill="x",
+                pady=10
+            )
+
+            top_title = tk.Label(
+                content,
+                text="TOP 3 SOLUTIONS",
+                bg="#111827",
+                fg="#22c55e",
+                font=("Segoe UI", 10, "bold")
+            )
+
+            top_title.pack(
+                anchor="w"
+            )
+
+            top1 = tk.Label(
+                content,
+                text="#1 -",
+                bg="#111827",
+                fg="white"
+            )
+
+            top1.pack(
+                anchor="w",
+                pady=2
+            )
+
+            top2 = tk.Label(
+                content,
+                text="#2 -",
+                bg="#111827",
+                fg="white"
+            )
+
+            top2.pack(
+                anchor="w",
+                pady=2
+            )
+
+            top3 = tk.Label(
+                content,
+                text="#3 -",
+                bg="#111827",
+                fg="white"
+            )
+
+            top3.pack(
+                anchor="w",
+                pady=2
+            )
+
+            ttk.Separator(
+                content,
+                orient="horizontal"
+            ).pack(
+                fill="x",
+                pady=10
+            )
+
+            best_title = tk.Label(
+                content,
+                text="BEST SOLUTION",
+                bg="#111827",
+                fg="#22c55e",
+                font=("Segoe UI", 10, "bold")
+            )
+
+            best_title.pack(
+                anchor="w"
+            )
+
+            best_label = tk.Label(
+                content,
+                text="-",
+                bg="#111827",
+                fg="white",
+                justify="left"
+            )
+
+            best_label.pack(
+                anchor="w",
+                pady=5
+            )
+
+            ttk.Separator(
+                content,
+                orient="horizontal"
+            ).pack(
+                fill="x",
+                pady=10
+            )
+
+            runtime_label = tk.Label(
+                content,
+                text="Runtime : -",
+                bg="#111827",
+                fg="#facc15"
+            )
+
+            runtime_label.pack(
+                anchor="w"
+            )
+
+            if not hasattr(
+                self,
+                "algorithm_widgets"
+            ):
+                self.algorithm_widgets = {}
+
+            if parent not in self.algorithm_widgets:
+                self.algorithm_widgets[parent] = {}
+
+            self.algorithm_widgets[parent][title] = {
+                "total": total_label,
+                "valid": valid_label,
+                "invalid": invalid_label,
+                "top1": top1,
+                "top2": top2,
+                "top3": top3,
+                "best": best_label,
+                "runtime": runtime_label
+            }
+
+    def run_optimization(self):
+
+        try:
+
+            modal = float(
+                self.modal_entry.get()
+            )
+
+        except ValueError:
+
+            print(
+                "Modal tidak valid"
+            )
+
+            return
+
+        scenarios = [
+            (3.5, self.tab1),
+            (4.0, self.tab2),
+            (4.5, self.tab3)
+        ]
+
+        for risk_limit, tab in scenarios:
+
+            bb_result = branch_and_bound(
+                modal,
+                risk_limit
+            )
+
+            dp_result = dynamic_programming(
+                modal,
+                risk_limit
+            )
+
+            ga_result = genetic_algorithm(
+                modal,
+                risk_limit
+            )
+
+            self.update_algorithm_card(
+                tab,
+                "Branch and Bound",
+                bb_result
+            )
+
+            self.update_algorithm_card(
+                tab,
+                "Dynamic Programming",
+                dp_result
+            )
+
+            self.update_algorithm_card(
+                tab,
+                "Genetic Algorithm",
+                ga_result
+            )
 
 if __name__ == "__main__":
 
