@@ -338,6 +338,24 @@ def genetic_algorithm(
         "runtime":
             runtime,
 
+        # =====================
+        # DATA UNTUK GUI
+        # =====================
+
+        "total_generated":
+            len(all_individuals),
+
+        "valid_count":
+            len(unique_solutions),
+
+        "invalid_count":
+            len(all_individuals)
+            - len(unique_solutions),
+
+        # =====================
+        # DATA KHUSUS GA
+        # =====================
+
         "population_size":
             POPULATION_SIZE,
 
@@ -346,9 +364,6 @@ def genetic_algorithm(
 
         "individuals_evaluated":
             len(all_individuals),
-
-        "valid_count":
-            len(unique_solutions),
 
         "top_3":
             top_3
