@@ -147,10 +147,7 @@ def is_valid_allocation(
 # =========================
 
 def create_solution(tabungan_pct, emas_pct, reksa_pct, modal):
-    """
-    Membuat objek solusi lengkap.
-    """
-
+    
     wealth = calculate_wealth(
         tabungan_pct,
         emas_pct,

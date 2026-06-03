@@ -22,10 +22,6 @@ def branch_and_bound(
     modal,
     risk_limit=4.0
 ):
-    """
-    Branch and Bound untuk mencari
-    kombinasi investasi terbaik.
-    """
 
     start_time = perf_counter()
 

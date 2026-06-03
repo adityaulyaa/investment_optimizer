@@ -3,10 +3,6 @@ import os
 from time import perf_counter
 from functools import lru_cache
 
-# =====================================
-# FIX IMPORT PROJECT ROOT
-# =====================================
-
 project_root = os.path.dirname(
     os.path.dirname(
         os.path.abspath(__file__)

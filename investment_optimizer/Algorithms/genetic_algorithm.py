@@ -3,10 +3,6 @@ import os
 import random
 from time import perf_counter
 
-# =====================================
-# FIX IMPORT PROJECT ROOT
-# =====================================
-
 project_root = os.path.dirname(
     os.path.dirname(
         os.path.abspath(__file__)
@@ -25,9 +21,7 @@ from Models.investment_model import (
     is_valid_allocation
 )
 
-# =====================================
 # PARAMETER GA
-# =====================================
 
 POPULATION_SIZE = 50
 GENERATIONS = 100
@@ -35,10 +29,7 @@ GENERATIONS = 100
 CROSSOVER_RATE = 0.8
 MUTATION_RATE = 0.1
 
-
-# =====================================
 # MEMBUAT INDIVIDU VALID
-# =====================================
 
 def generate_individual(
     risk_limit=4.0
@@ -69,9 +60,7 @@ def generate_individual(
             )
 
 
-# =====================================
 # FITNESS
-# =====================================
 
 def fitness(
     individual,
@@ -97,9 +86,7 @@ def fitness(
     )["wealth"]
 
 
-# =====================================
 # SELEKSI
-# =====================================
 
 def tournament_selection(
     population,
@@ -124,9 +111,7 @@ def tournament_selection(
     )
 
 
-# =====================================
 # CROSSOVER
-# =====================================
 
 def crossover(
     parent1,
@@ -160,9 +145,7 @@ def crossover(
     return parent1
 
 
-# =====================================
 # MUTASI
-# =====================================
 
 def mutate(
     individual,
@@ -177,9 +160,7 @@ def mutate(
     )
 
 
-# =====================================
 # MAIN GA
-# =====================================
 
 def genetic_algorithm(
     modal,

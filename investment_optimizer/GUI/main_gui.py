@@ -109,7 +109,6 @@ class InvestmentOptimizerGUI:
     # UI COMPONENTS
     # =================================
     def create_widgets(self):
-        # Semua elemen sekarang dipasang ke self.scrollable_frame, BUKAN self.root
 
         # =============================
         # HEADER
@@ -190,7 +189,7 @@ class InvestmentOptimizerGUI:
             tk.Label(scen_row, text=desc_scen, bg="#171a21", fg="#6b7280", font=("Segoe UI", 9)).pack(side="left", padx=10)
 
         # =============================
-        # NOTEBOOK / TABS
+        # NOTEBOOK 
         # =============================
         self.notebook = ttk.Notebook(self.scrollable_frame)
         self.notebook.pack(fill="both", expand=True, padx=30, pady=(20, 25))
